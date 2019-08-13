@@ -6,6 +6,8 @@ Created on Tue Aug 13 12:32:57 2019
 @author: ghosh128
 """
 
+import sys
+sys.path.append("../")
 import os
 import numpy as np
 import config
@@ -50,4 +52,7 @@ with tf.Session() as sess:
     feed_dict = {X: data}
     preds = sess.run(Z, feed_dict=feed_dict)
 plt.scatter(labels, preds)
-plt.show()
+plt.title('Actual vs Predicted plot')
+plt.xlabel('Actual Values')
+plt.ylabel('Predicted Values')
+plt.savefig(os.path.join(config.RESULT_DIR, "BALNCED", "WORD", "ActualvsPredicted.png"))

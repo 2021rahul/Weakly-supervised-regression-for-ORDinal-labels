@@ -6,6 +6,8 @@ Created on Mon Aug 12 19:51:39 2019
 @author: ghosh128
 """
 
+import sys
+sys.path.append("../")
 import os
 import numpy as np
 import config
@@ -44,7 +46,7 @@ print("TRAIN MODEL")
 saver = tf.train.Saver()
 merged_summary_op = tf.summary.merge_all()
 with tf.Session() as sess:
-    summary_writer = tf.summary.FileWriter(os.path.join(config.MODEL_DIR, "BALNCED", "WORD"), sess.graph)
+    summary_writer = tf.summary.FileWriter(os.path.join(config.MODEL_DIR, "BALNCED", "pairwiseReg"), sess.graph)
     sess.run(tf.global_variables_initializer())
     sess.run(tf.local_variables_initializer())
     for i in range(config.n_epochs):
@@ -56,4 +58,4 @@ with tf.Session() as sess:
         if not (i%100):
             print('Average loss epoch {0}: {1}'.format(i, loss_epoch))
     summary_writer.close()
-    save_path = saver.save(sess, os.path.join(config.MODEL_DIR, "BALNCED", "WORD", "model.ckpt"))
+    save_path = saver.save(sess, os.path.join(config.MODEL_DIR, "BALNCED", "pairwiseReg", "model.ckpt"))

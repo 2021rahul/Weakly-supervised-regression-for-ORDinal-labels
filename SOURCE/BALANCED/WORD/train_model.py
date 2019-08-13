@@ -6,6 +6,8 @@ Created on Mon Aug 12 19:51:39 2019
 @author: ghosh128
 """
 
+import sys
+sys.path.append("../")
 import os
 import numpy as np
 import config

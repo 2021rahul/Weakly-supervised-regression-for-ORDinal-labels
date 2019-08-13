@@ -6,6 +6,8 @@ Created on Tue Aug 13 12:32:57 2019
 @author: ghosh128
 """
 
+import sys
+sys.path.append("../")
 import os
 import numpy as np
 import config
@@ -44,10 +46,13 @@ with tf.variable_scope("optimizer", reuse=tf.AUTO_REUSE):
 print("TEST MODEL")
 saver = tf.train.Saver()
 with tf.Session() as sess:
-    saver.restore(sess, os.path.join(config.MODEL_DIR, "BALNCED", "WORD", "model.ckpt"))
+    saver.restore(sess, os.path.join(config.MODEL_DIR, "BALNCED", "pairwiseReg", "model.ckpt"))
     data = test_data[:,:-1]
     labels = np.reshape(test_data[:, -1], [-1, 1])
     feed_dict = {X: data}
     preds = sess.run(Z, feed_dict=feed_dict)
 plt.scatter(labels, preds)
-plt.show()
+plt.title('Actual vs Predicted plot')
+plt.xlabel('Actual Values')
+plt.ylabel('Predicted Values')
+plt.savefig(os.path.join(config.RESULT_DIR, "BALNCED", "pairwiseReg", "ActualvsPredicted.png"))
