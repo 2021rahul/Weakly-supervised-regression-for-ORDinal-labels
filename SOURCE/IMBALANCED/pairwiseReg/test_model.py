@@ -12,7 +12,6 @@ import os
 import numpy as np
 import config
 import tensorflow as tf
-import matplotlib.pyplot as plt
 from sklearn.metrics import mean_squared_error
 from math import sqrt
 tf.set_random_seed(1)
@@ -39,19 +38,24 @@ Z = tf.sigmoid(Z)
 print("TEST MODEL")
 saver = tf.train.Saver()
 with tf.Session() as sess:
-    saver.restore(sess, os.path.join(config.MODEL_DIR, "BALNCED", "pairwiseReg", "model.ckpt"))
+    saver.restore(sess, os.path.join(config.MODEL_DIR, "IMBALNCED", "pairwiseReg", "model.ckpt"))
     data = test_data[:,:-2]
     feed_dict = {X: data}
     preds = sess.run(Z, feed_dict=feed_dict)
 
 labels = np.reshape(test_data[:, -2], [-1, 1])
-rmse = sqrt(mean_squared_error(labels, preds))
-print("Root Mean Squared Error:", rmse)
-plt.scatter(labels, preds, s=0.01)
-plt.title('Actual vs Predicted plot')
-plt.xlabel('Actual Values')
-plt.ylabel('Predicted Values')
-RESULT_DIR = os.path.join(config.RESULT_DIR, "BALNCED", "pairwiseReg")
-if not os.path.exists(RESULT_DIR):
-    os.makedirs(RESULT_DIR)
-plt.savefig(os.path.join(RESULT_DIR, "ActualvsPredicted.png"))
+
+k_RMSE = np.zeros((1,3))
+for k in range(1,len(labels),10):
+    indices = np.argsort(preds[:,0])[::-1]
+    pred_top_k_rmse = sqrt(mean_squared_error(labels[indices[:k],0], preds[indices[:k],0]))
+    print("Top K Root Mean Squared Error(Pred):", pred_top_k_rmse)
+    indices = np.argsort(labels[:,0])[::-1]
+    true_top_k_rmse = sqrt(mean_squared_error(labels[indices[:k],0], preds[indices[:k],0]))
+    print("Top K Root Mean Squared Error(True):", true_top_k_rmse)
+    GM_top_k_rmse = sqrt(pred_top_k_rmse*true_top_k_rmse)
+    print("Top K Root Mean Squared Error(GM):", GM_top_k_rmse)
+    k_RMSE = np.vstack((k_RMSE, np.reshape(np.array([pred_top_k_rmse, true_top_k_rmse, GM_top_k_rmse]), (1,-1))))
+
+k_RMSE = k_RMSE[1:,:]
+np.save(os.path.join(config.RESULT_DIR, "IMBALNCED", "pairwiseReg", "k_RMSE"), k_RMSE)

@@ -15,10 +15,12 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 from sklearn.metrics import mean_squared_error
 from math import sqrt
+
 tf.set_random_seed(1)
 #%%
 print("LOAD DATA")
 test_data = np.load(os.path.join(config.NUMPY_DIR, "data_weak.npy"))
+
 num_features = test_data.shape[-1] - 2
 #%%
 print("BUILD MODEL")
@@ -39,7 +41,7 @@ Z = tf.sigmoid(Z)
 print("TEST MODEL")
 saver = tf.train.Saver()
 with tf.Session() as sess:
-    saver.restore(sess, os.path.join(config.MODEL_DIR, "BALNCED", "pairwiseReg", "model.ckpt"))
+    saver.restore(sess, os.path.join(config.MODEL_DIR, "BALNCED", "SSRManifold", "model.ckpt"))
     data = test_data[:,:-2]
     feed_dict = {X: data}
     preds = sess.run(Z, feed_dict=feed_dict)
@@ -51,7 +53,7 @@ plt.scatter(labels, preds, s=0.01)
 plt.title('Actual vs Predicted plot')
 plt.xlabel('Actual Values')
 plt.ylabel('Predicted Values')
-RESULT_DIR = os.path.join(config.RESULT_DIR, "BALNCED", "pairwiseReg")
+RESULT_DIR = os.path.join(config.RESULT_DIR, "BALNCED", "SSRManifold")
 if not os.path.exists(RESULT_DIR):
     os.makedirs(RESULT_DIR)
 plt.savefig(os.path.join(RESULT_DIR, "ActualvsPredicted.png"))

@@ -14,7 +14,6 @@ import pandas as pd
 import h5py
 import random
 from scipy import optimize
-import matplotlib.pyplot as plt
 #%%
 data = pd.read_csv(os.path.join(config.DATA_DIR[3:], 'train.csv'))
 data = data.values
@@ -29,7 +28,9 @@ max_val = max(Y)
 Y = (Y-min_val)/(max_val - min_val)
 
 O = np.zeros((Y.shape))
-bins = [0.1, 0.3, 0.45, 0.5, 0.6]
+#bins = [0.1, 0.3, 0.45, 0.5, 0.6]
+bins = [0.1, 0.3, 0.5]
+#bins = [0.5]
 level = 1
 O[np.where(Y<bins[0])[0],0] = level
 level = level+1
@@ -48,8 +49,8 @@ for i in np.unique(O):
     data_weak = np.vstack((data_weak, np.concatenate((X[index[num_strong:],:],Y[index[num_strong:],:],O[index[num_strong:],:]), axis = 1)))
 data_strong = data_strong[1:,:]
 data_weak = data_weak[1:,:]
-np.save(os.path.join(config.NUMPY_DIR[3:], "data_strong"), data_strong)
-np.save(os.path.join(config.NUMPY_DIR[3:], "data_weak"), data_weak)
+np.save(os.path.join(config.NUMPY_DIR[3:], "data_strong_"+str(len(bins)+1)), data_strong)
+np.save(os.path.join(config.NUMPY_DIR[3:], "data_weak_"+str(len(bins)+1)), data_weak)
 #%%
 #print("READ MAT DATA")
 #mat_data = {}
@@ -106,16 +107,18 @@ slack_var_lower = x[:N_s]
 slack_var_upper = x[N_s:2*N_s]
 theta = x[2*N_s:2*N_s+num_levels-1]
 
-np.save(os.path.join(config.NUMPY_DIR[3:], "theta"), theta)
+np.save(os.path.join(config.NUMPY_DIR[3:], "theta_"+str(len(bins)+1)), theta)
 #%%
 print("COMPUTE POSITIVENESS")
 positiveness = np.zeros(num_levels)
 for i in np.unique(O_s):
     positiveness[int(i-1)] = np.mean(Y_s[np.where(O_s == i)[0]])
 
-np.save(os.path.join(config.NUMPY_DIR[3:], "positiveness"), positiveness)
+np.save(os.path.join(config.NUMPY_DIR[3:], "positiveness_"+str(len(bins)+1)), positiveness)
 #%%
 shutil.rmtree("/".join(config.DATA_DIR.split("/")[:-1]))
 #%%
-
-
+print(len(np.where(O==1)[0]))
+print(len(np.where(O==2)[0]))
+print(len(np.where(O==3)[0]))
+print(len(np.where(O==4)[0]))

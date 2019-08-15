@@ -21,10 +21,9 @@ theta = np.load(os.path.join(config.NUMPY_DIR, "theta.npy")).astype(np.float32)
 positiveness = np.reshape(np.load(os.path.join(config.NUMPY_DIR, "positiveness.npy")).astype(np.float32), (-1,1))
 
 true_pos = positiveness[train_data_weak[:, -1].astype("int")-1].astype(np.float32)
-
-num_features = train_data_strong.shape[-1] - 2
 #%%
 print("BUILD MODEL")
+num_features = train_data_strong.shape[-1] - 2
 
 tf.reset_default_graph()
 with tf.name_scope('data'):
@@ -56,7 +55,7 @@ est_pos = tf.matmul(pred_ord, positiveness)
 
 with tf.name_scope("loss_function"):
     strong_loss = tf.reduce_mean(tf.square(Z - Y))
-    ord_loss = tf.reduce_mean(tf.square(est_pos - Pos))
+    ord_loss = -tf.log(tf.reduce_sum(tf.multiply(tf.nn.l2_normalize(true_pos,0),tf.nn.l2_normalize(est_pos,0))))
     loss = strong_loss + config.reg_param*ord_loss
 tf.summary.scalar('loss', loss)
 global_step = tf.Variable(0, name='global_step', trainable=False)
@@ -68,7 +67,7 @@ print("TRAIN MODEL")
 saver = tf.train.Saver()
 merged_summary_op = tf.summary.merge_all()
 with tf.Session() as sess:
-    summary_writer = tf.summary.FileWriter(os.path.join(config.MODEL_DIR, "BALNCED", "WORD"), sess.graph)
+    summary_writer = tf.summary.FileWriter(os.path.join(config.MODEL_DIR, "IMBALNCED", "WORD"), sess.graph)
     sess.run(tf.global_variables_initializer())
     sess.run(tf.local_variables_initializer())
     for i in range(config.n_epochs):
@@ -77,10 +76,11 @@ with tf.Session() as sess:
         labels_strong = np.reshape(train_data_strong[:, -2], [-1, 1])
         data_weak = train_data_weak[:,:-2]
 
-        feed_dict = {X:data_strong, Y:labels_strong, X_ord:data_weak, Pos:true_pos}
-        summary_str, _, loss_epoch = sess.run([merged_summary_op, optimizer, loss], feed_dict=feed_dict)
+        feed_dict = {X:data_strong, Y:labels_strong, X_ord:data_weak}
+        summary_str, _, loss_epoch, strong_loss_epoch, ord_loss_epoch = sess.run([merged_summary_op, optimizer, loss, strong_loss, ord_loss], feed_dict=feed_dict)
         summary_writer.add_summary(summary_str, global_step=global_step.eval())
         if not (i%100):
-            print('Average loss epoch {0}: {1}'.format(i, loss_epoch))
+            print('Epoch {0}: Loss: {1}, Strong_loss: {2}, Ord_Loss: {3}'.format(i, loss_epoch, strong_loss_epoch, ord_loss_epoch))
     summary_writer.close()
-    save_path = saver.save(sess, os.path.join(config.MODEL_DIR, "BALNCED", "WORD", "model.ckpt"))
+    save_path = saver.save(sess, os.path.join(config.MODEL_DIR, "IMBALNCED", "WORD", "model.ckpt"))
+

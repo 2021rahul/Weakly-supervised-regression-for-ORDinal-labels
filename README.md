@@ -1,2 +1,2 @@
-# Weakly-supervised-regression-for-OrDinal-labels
+# Weakly-supervised-regression-for-ORDinal-labels
 Code and Datasets for WORD paper

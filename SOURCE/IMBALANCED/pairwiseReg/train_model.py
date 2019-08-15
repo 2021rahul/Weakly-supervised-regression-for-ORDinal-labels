@@ -66,19 +66,27 @@ print("TRAIN MODEL")
 saver = tf.train.Saver()
 merged_summary_op = tf.summary.merge_all()
 with tf.Session() as sess:
-    summary_writer = tf.summary.FileWriter(os.path.join(config.MODEL_DIR, "BALNCED", "pairwiseReg"), sess.graph)
+    summary_writer = tf.summary.FileWriter(os.path.join(config.MODEL_DIR, "IMBALNCED", "pairwiseReg"), sess.graph)
     sess.run(tf.global_variables_initializer())
     sess.run(tf.local_variables_initializer())
     for i in range(config.n_epochs):
         data = train_data_strong[:,:-2]
         labels = np.reshape(train_data_strong[:, -2], [-1, 1])
+
         xhigh = np.zeros((1,num_features))
         xlow = np.zeros((1,num_features))
-        for level in range(1,num_levels):
-            high_index = index_dict[level+1][random.sample(range(len(index_dict[level+1])), len(index_dict[level+1]))]
+        for high_level in range(1,num_levels):
+            high_index = index_dict[high_level+1][random.sample(range(len(index_dict[high_level+1])), len(index_dict[high_level+1]))]
+            low_index = np.zeros(1).astype(int)
+            for low_level in range(high_level):
+                low_index = np.hstack((low_index, index_dict[low_level+1][random.sample(range(len(index_dict[low_level+1])), len(index_dict[low_level+1]))]))
+            low_index = low_index[1:]
+            low_index = low_index[random.sample(range(len(low_index)), len(low_index))]
+            high_index = high_index[:min(len(high_index), len(low_index))]
+            low_index = low_index[:min(len(high_index), len(low_index))]
             xhigh = np.vstack((xhigh, train_data_weak[high_index,:-2]))
-            low_index = index_dict[level][random.sample(range(len(index_dict[level])), len(index_dict[level]))]
             xlow = np.vstack((xlow, train_data_weak[low_index,:-2]))
+
         xhigh = xhigh[1:,:]
         xlow = xlow[1:,:]
         feed_dict = {X:data, Y:labels, Xhigh:xhigh, Xlow:xlow}
@@ -87,4 +95,4 @@ with tf.Session() as sess:
         if not (i%100):
             print('Average loss epoch {0}: {1}'.format(i, loss_epoch))
     summary_writer.close()
-    save_path = saver.save(sess, os.path.join(config.MODEL_DIR, "BALNCED", "pairwiseReg", "model.ckpt"))
+    save_path = saver.save(sess, os.path.join(config.MODEL_DIR, "IMBALNCED", "pairwiseReg", "model.ckpt"))
