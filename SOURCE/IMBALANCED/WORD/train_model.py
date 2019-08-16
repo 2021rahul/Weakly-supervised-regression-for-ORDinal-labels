@@ -21,9 +21,9 @@ theta = np.load(os.path.join(config.NUMPY_DIR, "theta.npy")).astype(np.float32)
 positiveness = np.reshape(np.load(os.path.join(config.NUMPY_DIR, "positiveness.npy")).astype(np.float32), (-1,1))
 
 true_pos = positiveness[train_data_weak[:, -1].astype("int")-1].astype(np.float32)
+num_features = train_data_strong.shape[-1] - 2
 #%%
 print("BUILD MODEL")
-num_features = train_data_strong.shape[-1] - 2
 
 tf.reset_default_graph()
 with tf.name_scope('data'):

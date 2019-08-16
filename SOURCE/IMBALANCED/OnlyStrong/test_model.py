@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Tue Aug 13 12:32:57 2019
+Created on Fri Aug 16 10:16:25 2019
 
 @author: ghosh128
 """
@@ -38,7 +38,7 @@ Z = tf.sigmoid(Z)
 print("TEST MODEL")
 saver = tf.train.Saver()
 with tf.Session() as sess:
-    saver.restore(sess, os.path.join(config.MODEL_DIR, "IMBALNCED", "pairwiseReg", "model.ckpt"))
+    saver.restore(sess, os.path.join(config.MODEL_DIR, "IMBALNCED", "OnlyStrong", "model.ckpt"))
     data = test_data[:,:-2]
     feed_dict = {X: data}
     preds = sess.run(Z, feed_dict=feed_dict)
@@ -58,7 +58,7 @@ for k in range(1,len(labels),10):
     k_RMSE = np.vstack((k_RMSE, np.reshape(np.array([pred_top_k_rmse, true_top_k_rmse, GM_top_k_rmse]), (1,-1))))
 
 k_RMSE = k_RMSE[1:,:]
-RESULT_DIR = os.path.join(config.RESULT_DIR, "IMBALNCED", "pairwiseReg")
+RESULT_DIR = os.path.join(config.RESULT_DIR, "IMBALNCED", "OnlyStrong")
 if not os.path.exists(RESULT_DIR):
     os.makedirs(RESULT_DIR)
 np.save(os.path.join(RESULT_DIR, "k_RMSE"), k_RMSE)

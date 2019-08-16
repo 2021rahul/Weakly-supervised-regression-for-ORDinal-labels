@@ -15,10 +15,14 @@ import tensorflow as tf
 tf.set_random_seed(1)
 #%%
 print("LOAD DATA")
-train_data = np.load(os.path.join(config.NUMPY_DIR, "train_data.npy"))
+train_data_strong = np.load(os.path.join(config.NUMPY_DIR, "data_strong.npy"))
+train_data_weak = np.load(os.path.join(config.NUMPY_DIR, "data_weak.npy"))
+
+num_features = train_data_strong.shape[-1] - 2
+num_levels = len(np.unique(train_data_strong[:,-1]))
 #%%
 print("BUILD MODEL")
-num_features = train_data.shape[-1] - 1
+batch_size = 1000
 
 tf.reset_default_graph()
 with tf.name_scope('data'):
@@ -56,16 +60,24 @@ print("TRAIN MODEL")
 saver = tf.train.Saver()
 merged_summary_op = tf.summary.merge_all()
 with tf.Session() as sess:
-    summary_writer = tf.summary.FileWriter(os.path.join(config.MODEL_DIR, "BALNCED", "WORD"), sess.graph)
+    summary_writer = tf.summary.FileWriter(os.path.join(config.MODEL_DIR, "IMBALNCED", "SSRManifold"), sess.graph)
     sess.run(tf.global_variables_initializer())
     sess.run(tf.local_variables_initializer())
+    k=0
     for i in range(config.n_epochs):
-        data = train_data[:,:-1]
-        labels = np.reshape(train_data[:, -1], [-1, 1])
-        feed_dict = {X:data, Y:labels}
+        data = train_data_strong[:,:-2]
+        labels = np.reshape(train_data_strong[:, -2], [-1, 1])
+
+        if k*batch_size>len(train_data_weak) or (k+1)*batch_size>len(train_data_weak):
+            k = 0
+        data_batch = train_data_weak[(k*batch_size)%len(train_data_weak):((k+1)*batch_size)%len(train_data_weak), :]
+        data_unlabeled = data_batch[:, :-2]
+
+        feed_dict = {X:data, Y:labels, X_unlabeled:data_unlabeled}
         summary_str, _, loss_epoch = sess.run([merged_summary_op, optimizer, loss], feed_dict=feed_dict)
         summary_writer.add_summary(summary_str, global_step=global_step.eval())
         if not (i%100):
             print('Average loss epoch {0}: {1}'.format(i, loss_epoch))
     summary_writer.close()
-    save_path = saver.save(sess, os.path.join(config.MODEL_DIR, "BALNCED", "WORD", "model.ckpt"))
+    save_path = saver.save(sess, os.path.join(config.MODEL_DIR, "IMBALNCED", "SSRManifold", "model.ckpt"))
+

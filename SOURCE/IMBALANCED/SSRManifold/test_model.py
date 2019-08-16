@@ -12,14 +12,16 @@ import os
 import numpy as np
 import config
 import tensorflow as tf
-import matplotlib.pyplot as plt
+from sklearn.metrics import mean_squared_error
+from math import sqrt
+
 tf.set_random_seed(1)
 #%%
 print("LOAD DATA")
-test_data = np.load(os.path.join(config.NUMPY_DIR, "test_data.npy"))
+test_data = np.load(os.path.join(config.NUMPY_DIR, "data_weak.npy"))
+num_features = test_data.shape[-1] - 2
 #%%
 print("BUILD MODEL")
-num_features = test_data.shape[-1] - 1
 
 tf.reset_default_graph()
 with tf.name_scope('data'):
@@ -32,27 +34,32 @@ with tf.variable_scope("Variables", reuse=tf.AUTO_REUSE):
 
 Z = tf.matmul(X, W, name="multiply_weights")
 Z = tf.add(Z, b, name="add_bias")
-
-with tf.name_scope("loss_function"):
-    strong_loss = tf.reduce_mean(tf.square(Z - Y))
-    ord_loss = tf.reduce_mean(tf.square(Z - Y))
-    loss = strong_loss + config.reg_param*ord_loss
-tf.summary.scalar('loss', loss)
-global_step = tf.Variable(0, name='global_step', trainable=False)
-
-with tf.variable_scope("optimizer", reuse=tf.AUTO_REUSE):
-    optimizer = tf.train.AdamOptimizer(config.learning_rate).minimize(loss, global_step)
+Z = tf.sigmoid(Z)
 #%%
 print("TEST MODEL")
 saver = tf.train.Saver()
 with tf.Session() as sess:
-    saver.restore(sess, os.path.join(config.MODEL_DIR, "BALNCED", "WORD", "model.ckpt"))
-    data = test_data[:,:-1]
-    labels = np.reshape(test_data[:, -1], [-1, 1])
+    saver.restore(sess, os.path.join(config.MODEL_DIR, "IMBALNCED", "SSRManifold", "model.ckpt"))
+    data = test_data[:,:-2]
     feed_dict = {X: data}
     preds = sess.run(Z, feed_dict=feed_dict)
-plt.scatter(labels, preds)
-plt.title('Actual vs Predicted plot')
-plt.xlabel('Actual Values')
-plt.ylabel('Predicted Values')
-plt.savefig(os.path.join(config.RESULT_DIR, "BALNCED", "WORD", "ActualvsPredicted.png"))
+
+labels = np.reshape(test_data[:, -2], [-1, 1])
+
+k_RMSE = np.zeros((1,3))
+for k in range(1,len(labels),10):
+    indices = np.argsort(preds[:,0])[::-1]
+    pred_top_k_rmse = sqrt(mean_squared_error(labels[indices[:k],0], preds[indices[:k],0]))
+    print("Top K Root Mean Squared Error(Pred):", pred_top_k_rmse)
+    indices = np.argsort(labels[:,0])[::-1]
+    true_top_k_rmse = sqrt(mean_squared_error(labels[indices[:k],0], preds[indices[:k],0]))
+    print("Top K Root Mean Squared Error(True):", true_top_k_rmse)
+    GM_top_k_rmse = sqrt(pred_top_k_rmse*true_top_k_rmse)
+    print("Top K Root Mean Squared Error(GM):", GM_top_k_rmse)
+    k_RMSE = np.vstack((k_RMSE, np.reshape(np.array([pred_top_k_rmse, true_top_k_rmse, GM_top_k_rmse]), (1,-1))))
+
+k_RMSE = k_RMSE[1:,:]
+RESULT_DIR = os.path.join(config.RESULT_DIR, "IMBALNCED", "SSRManifold")
+if not os.path.exists(RESULT_DIR):
+    os.makedirs(RESULT_DIR)
+np.save(os.path.join(RESULT_DIR, "k_RMSE"), k_RMSE)

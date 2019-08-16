@@ -15,7 +15,6 @@ import tensorflow as tf
 tf.set_random_seed(1)
 #%%
 print("LOAD DATA")
-print("LOAD DATA")
 train_data_strong = np.load(os.path.join(config.NUMPY_DIR, "data_strong.npy"))
 train_data_weak = np.load(os.path.join(config.NUMPY_DIR, "data_weak.npy"))
 

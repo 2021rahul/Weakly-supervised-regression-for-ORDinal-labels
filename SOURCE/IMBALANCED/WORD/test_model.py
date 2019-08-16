@@ -17,7 +17,7 @@ from math import sqrt
 tf.set_random_seed(1)
 #%%
 print("LOAD DATA")
-test_data = np.load(os.path.join(config.NUMPY_DIR, "data_weak.npy"))
+test_data = np.load(os.path.join(config.NUMPY_DIR, "data_weak_4.npy"))
 num_features = test_data.shape[-1] - 2
 #%%
 print("BUILD MODEL")
@@ -58,4 +58,7 @@ for k in range(1,len(labels),10):
     k_RMSE = np.vstack((k_RMSE, np.reshape(np.array([pred_top_k_rmse, true_top_k_rmse, GM_top_k_rmse]), (1,-1))))
 
 k_RMSE = k_RMSE[1:,:]
-np.save(os.path.join(config.RESULT_DIR, "IMBALNCED", "WORD", "k_RMSE"), k_RMSE)
+RESULT_DIR = os.path.join(config.RESULT_DIR, "IMBALNCED", "WORD")
+if not os.path.exists(RESULT_DIR):
+    os.makedirs(RESULT_DIR)
+np.save(os.path.join(RESULT_DIR, "k_RMSE_6"), k_RMSE)
