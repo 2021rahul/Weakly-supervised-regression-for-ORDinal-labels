@@ -1,4 +1,4 @@
-function [x_s_1, y_s_1, x_s_2, y_s_2] = learn_model_coreg(x_s, y_s, x)
+function [x_s_1, y_s_1, x_s_2, y_s_2] = train_model(x_s, y_s, x)
 
 k1 = 3; % euclidean
 k2 = 5; % mahalanobis

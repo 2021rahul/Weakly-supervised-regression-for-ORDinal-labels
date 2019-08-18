@@ -27,7 +27,7 @@ pad = 0
 n_bands = 10
 
 #%% TRAIN INFO
-reg_param = 0.25
+reg_param = 10.0
 reg_param1 = 1
 reg_param2 = 1
 learning_rate = 0.005

@@ -28,8 +28,9 @@ max_val = max(Y)
 Y = (Y-min_val)/(max_val - min_val)
 
 O = np.zeros((Y.shape))
-#bins = [0.1, 0.3, 0.45, 0.5, 0.6]
-bins = [0.1, 0.3, 0.5]
+bins = [0.1, 0.3, 0.45, 0.5, 0.6]
+#bins = [0.1, 0.3, 0.5]
+#bins = [0.3, 0.6]
 #bins = [0.5]
 level = 1
 O[np.where(Y<bins[0])[0],0] = level
@@ -122,3 +123,13 @@ print(len(np.where(O==1)[0]))
 print(len(np.where(O==2)[0]))
 print(len(np.where(O==3)[0]))
 print(len(np.where(O==4)[0]))
+print(len(np.where(O==5)[0]))
+print(len(np.where(O==6)[0]))
+#%%
+from scipy import io
+
+strong_data = np.load(os.path.join(config.NUMPY_DIR[3:], "data_strong_6.npy"))
+weak_data = np.load(os.path.join(config.NUMPY_DIR[3:], "data_weak_6.npy"))
+
+scipy.io.savemat(os.path.join(config.NUMPY_DIR[3:],'strong_data.mat'), {'strong_data': strong_data})
+scipy.io.savemat(os.path.join(config.NUMPY_DIR[3:],'weak_data.mat'), {'weak_data': weak_data})

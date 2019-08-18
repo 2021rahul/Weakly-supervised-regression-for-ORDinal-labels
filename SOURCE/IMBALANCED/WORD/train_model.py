@@ -15,10 +15,10 @@ import tensorflow as tf
 tf.set_random_seed(1)
 #%%
 print("LOAD DATA")
-train_data_strong = np.load(os.path.join(config.NUMPY_DIR, "data_strong.npy")).astype(np.float32)
-train_data_weak = np.load(os.path.join(config.NUMPY_DIR, "data_weak.npy")).astype(np.float32)
-theta = np.load(os.path.join(config.NUMPY_DIR, "theta.npy")).astype(np.float32)
-positiveness = np.reshape(np.load(os.path.join(config.NUMPY_DIR, "positiveness.npy")).astype(np.float32), (-1,1))
+train_data_strong = np.load(os.path.join(config.NUMPY_DIR, "data_strong_6.npy")).astype(np.float32)
+train_data_weak = np.load(os.path.join(config.NUMPY_DIR, "data_weak_6.npy")).astype(np.float32)
+theta = np.load(os.path.join(config.NUMPY_DIR, "theta_6.npy")).astype(np.float32)
+positiveness = np.reshape(np.load(os.path.join(config.NUMPY_DIR, "positiveness_6.npy")).astype(np.float32), (-1,1))
 
 true_pos = positiveness[train_data_weak[:, -1].astype("int")-1].astype(np.float32)
 num_features = train_data_strong.shape[-1] - 2

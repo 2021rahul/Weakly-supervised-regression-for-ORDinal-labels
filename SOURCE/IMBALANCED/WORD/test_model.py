@@ -17,7 +17,7 @@ from math import sqrt
 tf.set_random_seed(1)
 #%%
 print("LOAD DATA")
-test_data = np.load(os.path.join(config.NUMPY_DIR, "data_weak_4.npy"))
+test_data = np.load(os.path.join(config.NUMPY_DIR, "data_weak_6.npy"))
 num_features = test_data.shape[-1] - 2
 #%%
 print("BUILD MODEL")
