@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Tue Aug 13 12:32:57 2019
+Created on Fri Aug 16 10:16:25 2019
 
 @author: ghosh128
 """
@@ -14,7 +14,6 @@ import config
 import tensorflow as tf
 from sklearn.metrics import mean_squared_error
 from math import sqrt
-
 tf.set_random_seed(1)
 #%%
 print("LOAD DATA")
@@ -35,10 +34,10 @@ Z = tf.matmul(X, W, name="multiply_weights")
 Z = tf.add(Z, b, name="add_bias")
 Z = tf.sigmoid(Z)
 #%%
-print("VALIDATE MODEL")
+print("TEST MODEL")
 saver = tf.train.Saver()
 with tf.Session() as sess:
-    saver.restore(sess, os.path.join(config.MODEL_DIR, "SSRManifold", "model.ckpt"))
+    saver.restore(sess, os.path.join(config.MODEL_DIR, "OnlyStrong", "model.ckpt"))
     data = test_data[:,:-2]
     feed_dict = {X: data}
     preds = sess.run(Z, feed_dict=feed_dict)

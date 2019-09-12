@@ -1,0 +1,33 @@
+#!/bin/bash
+
+if [ -f ../../DATA/D2/balanced_out.txt ]; then
+    rm ../../DATA/D2/balanced_out.txt
+fi
+
+echo "OnlyStrong" >> ../../DATA/D2/balanced_out.txt
+cd OnlyStrong
+python train_model.py >> ../../../DATA/D2/balanced_out.txt
+python validate_model.py >> ../../../DATA/D2/balanced_out.txt
+python test_model.py >> ../../../DATA/D2/balanced_out.txt
+cd ../
+
+echo "SSRManifold" >> ../../DATA/D2/balanced_out.txt
+cd SSRManifold
+python train_model.py >> ../../../DATA/D2/balanced_out.txt
+python validate_model.py >> ../../../DATA/D2/balanced_out.txt
+python test_model.py >> ../../../DATA/D2/balanced_out.txt
+cd ../
+
+echo "pairwiseReg" >> ../../DATA/D2/balanced_out.txt
+cd pairwiseReg
+python train_model.py >> ../../../DATA/D2/balanced_out.txt
+python validate_model.py >> ../../../DATA/D2/balanced_out.txt
+python test_model.py >> ../../../DATA/D2/balanced_out.txt
+cd ../
+
+echo "WORD" >> ../../DATA/D2/balanced_out.txt
+cd WORD
+python train_model.py >> ../../../DATA/D2/balanced_out.txt
+python validate_model.py >> ../../../DATA/D2/balanced_out.txt
+python test_model.py >> ../../../DATA/D2/balanced_out.txt
+cd ../
