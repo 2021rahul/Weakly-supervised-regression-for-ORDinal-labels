@@ -15,11 +15,10 @@ import tensorflow as tf
 tf.set_random_seed(1)
 #%%
 print("LOAD DATA")
-train_data_strong = np.load(os.path.join(config.NUMPY_DIR, "data_strong.npy")).astype(np.float32)
+train_data_strong = np.load(os.path.join(config.NUMPY_DIR, "train_data_strong.npy")).astype(np.float32)
 num_features = train_data_strong.shape[-1] - 2
 #%%
 print("BUILD MODEL")
-
 tf.reset_default_graph()
 with tf.name_scope('data'):
     X = tf.placeholder(tf.float32, [None, num_features], name="inputs")
@@ -39,16 +38,16 @@ tf.summary.scalar('loss', loss)
 global_step = tf.Variable(0, name='global_step', trainable=False)
 
 with tf.variable_scope("optimizer", reuse=tf.AUTO_REUSE):
-    optimizer = tf.train.AdamOptimizer(config.learning_rate).minimize(loss, global_step)
+    optimizer = tf.train.AdamOptimizer(config.OnlyStrong_learning_rate).minimize(loss, global_step)
 #%%
 print("TRAIN MODEL")
 saver = tf.train.Saver()
 merged_summary_op = tf.summary.merge_all()
 with tf.Session() as sess:
-    summary_writer = tf.summary.FileWriter(os.path.join(config.MODEL_DIR, "IMBALNCED", "OnlyStrong"), sess.graph)
+    summary_writer = tf.summary.FileWriter(os.path.join(config.MODEL_DIR, "OnlyStrong"), sess.graph)
     sess.run(tf.global_variables_initializer())
     sess.run(tf.local_variables_initializer())
-    for i in range(config.n_epochs):
+    for i in range(config.OnlyStrong_n_epochs):
 
         data_strong = train_data_strong[:,:-2]
         labels_strong = np.reshape(train_data_strong[:, -2], [-1, 1])
@@ -59,5 +58,4 @@ with tf.Session() as sess:
         if not (i%100):
             print('Epoch {0}: Loss: {1}'.format(i, loss_epoch))
     summary_writer.close()
-    save_path = saver.save(sess, os.path.join(config.MODEL_DIR, "IMBALNCED", "OnlyStrong", "model.ckpt"))
-
+    save_path = saver.save(sess, os.path.join(config.MODEL_DIR, "OnlyStrong", "model.ckpt"))

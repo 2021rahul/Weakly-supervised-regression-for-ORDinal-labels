@@ -1,0 +1,59 @@
+#!/bin/bash
+
+if [ -f ../../DATA/D4/out.txt ]; then
+    rm ../../DATA/D4/out.txt
+fi
+
+python data.py >> ../../DATA/D4/out.txt
+
+echo "#########################################################################" >> ../../DATA/D4/out.txt
+
+echo "OnlyStrong" >> ../../DATA/D4/out.txt
+cd OnlyStrong
+for run in 1 2 3 4 5
+do
+  echo "RUN $run" >> ../../../DATA/D4/out.txt
+  python train_model.py
+  python validate_model.py >> ../../../DATA/D4/out.txt
+  python test_model.py >> ../../../DATA/D4/out.txt
+done
+cd ../
+
+echo "#########################################################################" >> ../../DATA/D4/out.txt
+
+echo "SSRManifold" >> ../../DATA/D4/out.txt
+cd SSRManifold
+for run in 1 2 3 4 5
+do
+  echo "RUN $run" >> ../../../DATA/D4/out.txt
+  python train_model.py
+  python validate_model.py >> ../../../DATA/D4/out.txt
+  python test_model.py >> ../../../DATA/D4/out.txt
+done
+cd ../
+
+echo "#########################################################################" >> ../../DATA/D4/out.txt
+
+echo "pairwiseReg" >> ../../DATA/D4/out.txt
+cd pairwiseReg
+for run in 1 2 3 4 5
+do
+  echo "RUN $run" >> ../../../DATA/D4/out.txt
+  python train_model.py
+  python validate_model.py >> ../../../DATA/D4/out.txt
+  python test_model.py >> ../../../DATA/D4/out.txt
+done
+cd ../
+
+echo "#########################################################################" >> ../../DATA/D4/out.txt
+
+echo "WORD" >> ../../DATA/D4/out.txt
+cd WORD
+for run in 1 2 3 4 5
+do
+  echo "RUN $run" >> ../../../DATA/D4/out.txt
+  python train_model.py
+  python validate_model.py >> ../../../DATA/D4/out.txt
+  python test_model.py >> ../../../DATA/D4/out.txt
+done
+cd ../

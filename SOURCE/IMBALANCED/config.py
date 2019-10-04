@@ -8,28 +8,38 @@ Created on Mon Aug 12 19:37:47 2019
 
 import os
 #%% FILES INFO
-DATASET = "D6"
+DATASET = "D4"
+k = 3000
 DATA_DIR = os.path.join("../../../DATA", DATASET)
 NUMPY_DIR = os.path.join(DATA_DIR, "NUMPY")
-if not os.path.exists(NUMPY_DIR):
-    os.makedirs(NUMPY_DIR)
 RESULT_DIR = os.path.join(DATA_DIR, "RESULT")
-if not os.path.exists(RESULT_DIR):
-    os.makedirs(RESULT_DIR)
 MODEL_DIR = os.path.join(DATA_DIR, "MODEL")
-if not os.path.exists(MODEL_DIR):
-    os.makedirs(MODEL_DIR)
+
 #%% DATA INFO
-year = "2018"
-resolution = 10
-tile_size = 1000
-pad = 0
-n_bands = 10
+num_strong = 20
+num_weak = 10000
+num_validate = num_strong
+num_test = num_weak
 
 #%% TRAIN INFO
-reg_param = 10.0
-reg_param1 = 1
-reg_param2 = 1
-learning_rate = 0.005
-n_epochs = 10000
-s = 100.0
+
+# OnlyStrong
+OnlyStrong_learning_rate = 0.001
+OnlyStrong_n_epochs = 10000
+
+# SSRManifold
+SSRManifold_reg_param = 1.0
+SSRManifold_learning_rate = 0.001
+SSRManifold_n_epochs = 10000
+
+# pairwiseReg
+pairwiseReg_reg_param1 = 1.0
+pairwiseReg_reg_param2 = 1.0
+pairwiseReg_learning_rate = 0.01
+pairwiseReg_n_epochs = 10000
+
+# WORD
+WORD_reg_param = 1.0
+WORD_learning_rate = 0.01
+WORD_n_epochs = 10000
+WORD_s = 1000.0

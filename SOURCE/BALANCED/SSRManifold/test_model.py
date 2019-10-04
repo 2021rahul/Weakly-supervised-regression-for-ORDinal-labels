@@ -35,7 +35,7 @@ Z = tf.matmul(X, W, name="multiply_weights")
 Z = tf.add(Z, b, name="add_bias")
 Z = tf.sigmoid(Z)
 #%%
-print("VALIDATE MODEL")
+print("TEST MODEL")
 saver = tf.train.Saver()
 with tf.Session() as sess:
     saver.restore(sess, os.path.join(config.MODEL_DIR, "SSRManifold", "model.ckpt"))

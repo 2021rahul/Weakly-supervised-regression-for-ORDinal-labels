@@ -107,7 +107,7 @@ Z_Pos = tf.matmul(pred_ord, positiveness)
 with tf.name_scope("loss_function"):
     strong_loss = tf.reduce_mean(tf.square(Z - Y))
     ord_loss = tf.reduce_mean(tf.square(Z_Pos - Y_Pos))
-    loss = (strong_loss + config.WORD_reg_param*ord_loss)/(1+config.WORD_reg_param)
+    loss = (strong_loss + config.WORD_reg_param*ord_loss)
 tf.summary.scalar('loss', loss)
 global_step = tf.Variable(0, name='global_step', trainable=False)
 
@@ -128,9 +128,9 @@ with tf.Session() as sess:
         data_weak = train_data_weak[:,:-2]
 
         feed_dict = {X:data_strong, Y:labels_strong, X_ord:data_weak, Y_Pos:true_pos}
-        summary_str, _, loss_epoch = sess.run([merged_summary_op, optimizer, loss], feed_dict=feed_dict)
+        summary_str, _, loss_epoch, strong_loss_epoch, ord_loss_epoch = sess.run([merged_summary_op, optimizer, loss, strong_loss, ord_loss], feed_dict=feed_dict)
         summary_writer.add_summary(summary_str, global_step=global_step.eval())
         if not (i%100):
-            print('Average loss epoch {0}: {1}'.format(i, loss_epoch))
+            print('Epoch:{0} Loss:{1}, Strong_loss:{2}, Ord_Loss:{3}'.format(i, loss_epoch, strong_loss_epoch, ord_loss_epoch))
     summary_writer.close()
     save_path = saver.save(sess, os.path.join(config.MODEL_DIR, "WORD", "model_balanced.ckpt"))
